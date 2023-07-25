@@ -7,6 +7,6 @@ import retrofit2.http.GET
 interface NotasService {
 
     @GET("notas")
-    fun buscaTodas(): Call<List<NotasReposta>>
+    suspend fun buscaTodas(): List<NotasReposta>
 
 }

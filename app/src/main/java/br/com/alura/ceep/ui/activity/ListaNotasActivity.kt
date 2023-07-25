@@ -12,9 +12,9 @@ import androidx.lifecycle.repeatOnLifecycle
 import br.com.alura.ceep.database.AppDatabase
 import br.com.alura.ceep.databinding.ActivityListaNotasBinding
 import br.com.alura.ceep.extensions.vaiPara
+import br.com.alura.ceep.repository.NotasRepository
 import br.com.alura.ceep.ui.recyclerview.adapter.ListaNotasAdapter
-import br.com.alura.ceep.webClient.RetrofitClient
-import kotlinx.coroutines.Dispatchers.IO
+import br.com.alura.ceep.webClient.NotasWebClient
 import kotlinx.coroutines.launch
 
 class ListaNotasActivity : AppCompatActivity() {
@@ -25,8 +25,8 @@ class ListaNotasActivity : AppCompatActivity() {
     private val adapter by lazy {
         ListaNotasAdapter(this)
     }
-    private val dao by lazy {
-        AppDatabase.instancia(this).notaDao()
+    private val repository by lazy {
+        NotasRepository(AppDatabase.instancia(this), NotasWebClient)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,18 +35,14 @@ class ListaNotasActivity : AppCompatActivity() {
         configuraFab()
         configuraRecyclerView()
         lifecycleScope.launch {
+            launch {
+                val notasRepostas = repository.atualizaTodas()
+                notasRepostas.let { notas ->
+                    Log.e("ListaNotas", "onCreate: $notas")
+                }
+            }
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 buscaNotas()
-            }
-        }
-
-
-        lifecycleScope.launch(IO) {
-            val call = RetrofitClient().notaService.buscaTodas()
-            val response = call.execute()
-            response.body()?.let {
-                val notas = it.map { notaResposta -> notaResposta.paraNota() }
-                Log.e("ListaNotas", "onCreate: $notas")
             }
         }
     }
@@ -69,7 +65,7 @@ class ListaNotasActivity : AppCompatActivity() {
     }
 
     private suspend fun buscaNotas() {
-        dao.buscaTodas()
+        repository.buscaTodas()
             .collect { notasEncontradas ->
                 binding.activityListaNotasMensagemSemNotas.visibility =
                     if (notasEncontradas.isEmpty()) {

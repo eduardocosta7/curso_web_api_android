@@ -1,6 +1,7 @@
 package br.com.alura.ceep.webClient.model
 
 import br.com.alura.ceep.model.Nota
+import java.util.UUID
 
 class NotasReposta(
     val id: String?,
@@ -9,7 +10,7 @@ class NotasReposta(
     val imagem: String?
 ) {
     fun paraNota() = Nota(
-        id = 0,
+        id = id ?: UUID.randomUUID().toString(),
         titulo = titulo ?: "",
         descricao = descricao ?: "",
         imagem = imagem ?: ""

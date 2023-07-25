@@ -9,7 +9,7 @@ class RetrofitClient {
     private val retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create())
         .client(HttpClient.getClient())
-        .baseUrl("http://192.168.15.8:8080/")
+        .baseUrl("http://192.168.15.7:8080/")
 
     val notaService: NotasService by lazy {
         retrofit.build().create(NotasService::class.java)
