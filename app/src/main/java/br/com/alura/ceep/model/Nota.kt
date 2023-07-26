@@ -10,5 +10,6 @@ data class Nota(
     val id: String = UUID.randomUUID().toString(),
     val titulo: String,
     val descricao: String,
-    val imagem: String? = null
+    val imagem: String? = null,
+    val flSincronizado: Boolean = false
 )
