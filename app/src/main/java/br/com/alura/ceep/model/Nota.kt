@@ -1,5 +1,6 @@
 package br.com.alura.ceep.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.UUID
@@ -11,5 +12,8 @@ data class Nota(
     val titulo: String,
     val descricao: String,
     val imagem: String? = null,
-    val flSincronizado: Boolean = false
+    @ColumnInfo(defaultValue = "0")
+    val flSincronizado: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val flDesativada: Boolean = false
 )

@@ -33,13 +33,25 @@ class ListaNotasActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         configuraFab()
+        configuraSwiperRefresh()
         configuraRecyclerView()
+        atualizaNotas()
+    }
+
+    private fun configuraSwiperRefresh() {
+        binding.mSwiper.setOnRefreshListener {
+                atualizaNotas()
+            }
+    }
+
+    private fun atualizaNotas() {
         lifecycleScope.launch {
             launch {
-                val notasRepostas = repository.atualizaTodas()
+                val notasRepostas = repository.sincroniza()
                 notasRepostas.let { notas ->
                     Log.e("ListaNotas", "onCreate: $notas")
                 }
+                binding.mSwiper.isRefreshing = false
             }
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 buscaNotas()
@@ -65,8 +77,7 @@ class ListaNotasActivity : AppCompatActivity() {
     }
 
     private suspend fun buscaNotas() {
-        repository.buscaTodas()
-            .collect { notasEncontradas ->
+        repository.buscaTodas().collect { notasEncontradas ->
                 binding.activityListaNotasMensagemSemNotas.visibility =
                     if (notasEncontradas.isEmpty()) {
                         binding.activityListaNotasRecyclerview.visibility = GONE
